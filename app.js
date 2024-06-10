@@ -121,7 +121,7 @@ app.post('/order', async (req, res) => {
                 message: "Please provide all required fields",
             })
         }
-        console.log(req.body);  
+        
         const newOrder = new Order({
             userId,
             name,
@@ -158,5 +158,68 @@ app.post('/order', async (req, res) => {
         console.log(err);
     }
 });
+
+
+app.get('/orders/:UserId', async (req, res) => {
+    const userID = req.params.UserId
+    
+    const orders = await Order.find({ userId: userID })
+    try {
+        if (!orders) {
+            return res.status(400).send({
+                status: 400,
+                success: false,
+                message: "No orders found",
+            })
+        }
+        res.send({
+            status: 200,
+            success: true,
+            message: "Orders fetched successfully",
+            orders
+           
+        })
+        console.log(orders);
+    }
+    catch (err) {
+        res.status(500).send({
+            status: 500,
+            success: false,
+            message: "Server error",
+        })
+        console.log(err);
+    }
+})
+
+app.get('/order-details/:orderId', async (req, res) => {
+    const orderID = req.params.orderId
+        
+    const order = await Order.findOne({ _id: orderID })
+    try {
+        if (!order) {
+            return res.status(400).send({
+                status: 400,
+                success: false,
+                message: "No order found",
+            })
+        }
+        res.send({
+            status: 200,
+            success: true,
+            message: "Order fetched successfully",
+            order
+           
+        })
+        
+    }
+    catch (err) {
+        res.status(500).send({
+            status: 500,
+            success: false,
+            message: "Server error",
+        })
+        console.log(err);
+    }
+})
 
 module.exports = app;
