@@ -65,7 +65,6 @@ app.post('/signup', async (req, res) => {
 app.post('/login', async (req, res) => {
 
     const { email, password } = req.body;
-    console.log(email, password);
     try {
         if (!email || !password) {
             return res.status(400).send({
@@ -138,7 +137,7 @@ app.post('/order', async (req, res) => {
             tax,
             totalCost,
             orderStatus: "pending",
-            paymentStatus: "pending",
+            paymentStatus: "Unpaid",
             paymentMethod: "COD",
         })
         await newOrder.save();
@@ -179,7 +178,7 @@ app.get('/orders/:UserId', async (req, res) => {
             orders
            
         })
-        console.log(orders);
+        
     }
     catch (err) {
         res.status(500).send({
