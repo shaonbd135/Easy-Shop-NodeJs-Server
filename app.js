@@ -4,6 +4,7 @@ const cors = require("cors");
 require('./config/database');
 const User = require('./models/user.model');
 const Order = require('./models/order.model');
+const Wishlist = require('./models/wishlist.model');
 
 const app = express();
 app.use(cors());
@@ -210,6 +211,89 @@ app.get('/order-details/:orderId', async (req, res) => {
            
         })
         
+    }
+    catch (err) {
+        res.status(500).send({
+            status: 500,
+            success: false,
+            message: "Server error",
+        })
+        console.log(err);
+    }
+})
+
+app.post('/wishlist', async (req, res) => {
+    const { userId, productId } = req.body
+    
+    try {
+        if (!userId || !productId) {
+            return res.status(400).send({
+                status: 400,
+                success: false,
+                message: "Please add product to wishlist",
+            })
+        }
+        const newWishlist = new Wishlist({
+            userId,
+            productId
+        })
+        await newWishlist.save();  
+        res.status(200).send({
+            status: 200,
+            success: true,
+            message: "Wishlist created successfully",
+        })
+    }
+    catch (err) {
+        res.status(500).send({
+            status: 500,
+            success: false,
+            message: "Server error",
+        })
+        console.log(err);
+    }
+})
+
+app.get('/wishlist/:userId', async (req, res) => {
+    const userID = req.params.userId
+    const wishlist = await Wishlist.find({ userId: userID })
+    try {
+        if (!wishlist) {
+            return res.status(400).send({
+                status: 400,
+                success: false,
+                message: "No wishlist found",
+            })
+        }
+        res.send({
+            status: 200,
+            success: true,
+            message: `You have ${wishlist.length} items in your wishlist`,
+            wishlist
+           
+        })
+        
+    }
+    catch (err) {
+        res.status(500).send({
+            status: 500,
+            success: false,
+            message: "Server error",
+        })
+        console.log(err);
+    }
+})
+
+app.delete('/wishlist/:userId/:id', async (req, res) => {
+    const { userId,id } = req.params
+    
+    try {
+        await Wishlist.deleteOne({ userId, _id: id })
+        res.status(200).send({
+            status: 200,
+            success: true,
+            message: "Successfully deleted from wishlist",
+        })
     }
     catch (err) {
         res.status(500).send({
