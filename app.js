@@ -110,6 +110,75 @@ app.post('/login', async (req, res) => {
     }
 })
 
+app.get('/user/:userId', async (req, res) => {
+    const userID = req.params.userId
+    const user = await User.findById(_id = userID)
+    try {
+        if (!user) {
+            return res.status(400).send({
+                status: 400,
+                success: false,
+                message: "User not found",
+            })
+        }
+        res.send({
+            status: 200,
+            success: true,
+            message: "User fetched successfully",
+            user
+           
+        })
+        
+    }
+    catch (err) {
+        res.status(500).send({
+            status: 500,
+            success: false,
+            message: "Server error",
+        })
+        console.log(err);   
+    }
+
+})
+
+app.put ('/user/:userId', async (req, res) => {
+    const userID = req.params.userId
+    const { name,address,city,state,zip,country } = req.body
+    const user = await User.findByIdAndUpdate(userID, { name,address,city,state,zip,country })
+    try {
+        if (!user) {
+            return res.status(400).send({
+                status: 400,
+                success: false,
+                message: "User not found",
+            })
+        }
+        res.send({
+            status: 200,
+            success: true,
+            message: "Profile details updated successfully",
+            user:{
+                name,  
+                address,
+                city,
+                state,
+                zip,
+                country               
+            }
+           
+        })
+        
+    }
+    catch (err) {
+        res.status(500).send({
+            status: 500,
+            success: false,
+            message: "Server error",
+        })
+        console.log(err);
+    }
+})
+
 app.post('/order', async (req, res) => {
 
     const { userId, name, email, productInfo, deliveryOption, address, city, state, zip, country, subTotal, deliveryFee, tax, totalCost } = req.body;
